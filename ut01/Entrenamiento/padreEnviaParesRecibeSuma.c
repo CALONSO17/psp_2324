@@ -1,6 +1,3 @@
-//Crea un proceso que cree dos procesos hijos, luego generará N (20) números aleatorios. 
-//Enviará los pares al primer hijo, los impares al segundo. Los hijos escribirán por pantalla "Soy el hijo 1|2, he recibido ". 
-//Por cada número que mande el padre.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,13 +9,15 @@
 
 int main() {
     srand(time(NULL));
-
+    int sumaPar = 0;
+    int sumaImpar= 0;
     // Creamos dos tuberías (pipes) para comunicarnos con los hijos
     int fd1[2]; // Tubería para el primer hijo
     int fd2[2]; // Tubería para el segundo hijo
+    int fd3[2]; // Tuberia para el padre
 
     // Comprobamos si la creación de las tuberías tuvo éxito
-    if (pipe(fd1) == -1 || pipe(fd2) == -1) {
+    if (pipe(fd1) == -1 || pipe(fd2) == -1 || pipe(fd3) == -1) {
         perror("Error al crear el pipe");
         exit(EXIT_FAILURE);
     }
@@ -38,18 +37,22 @@ int main() {
     if (child1 == 0) { // Código para el primer hijo
         //Hay que cerrar el hijo que no se usa
         close(fd1[1]); // Cerramos el extremo de escritura, el primer hijo solo va a leer
+
         close(fd2[1]);//cerramos la tuberia de entrada y salida del otro hijo para poder usarlo
         close(fd2[0]);
         int number;
         printf("Soy el hijo 1, he recibido: ");
         
         while (read(fd1[0], &number, sizeof(int)) > 0) {
+            sumaPar += number;
             printf("%d ", number);
             fflush(stdout);
         }
         printf("\n");
         close(fd1[0]); // Cerramos el extremo de lectura una vez terminada la lectura
         
+        write(fd3[1], &sumaPar, sizeof(int));
+        close(fd3[1]);
         exit(EXIT_SUCCESS);
     }
 
@@ -69,10 +72,14 @@ int main() {
         int number;
         printf("Soy el hijo 2, he recibido: ");
         while (read(fd2[0], &number, sizeof(int)) > 0) {
+            sumaImpar += number;
             printf("%d ", number);
         }
         printf("\n");
         close(fd2[0]); // Cerramos el extremo de lectura una vez terminada la lectura
+
+        write(fd3[1], &sumaImpar, sizeof(int));
+        close(fd3[1]);
         exit(EXIT_SUCCESS);
     }
 
@@ -101,6 +108,13 @@ int main() {
     // Esperamos a que ambos hijos terminen antes de salir
     waitpid(child1, NULL, 0);
     waitpid(child2, NULL, 0);
+
+    read(fd3[0], &sumaPar, sizeof(int));//leemos lo que manda el primer hijo
+    read(fd3[0], &sumaImpar, sizeof(int));//leemos lo que manda el segundo hijo
+
+    printf("La suma de los impares es %d\nLa suma de los pares es %d\n", sumaImpar, sumaPar);
+
+    close(fd3[0]);//cerramos la lectura del padre
 
     return 0;
 }

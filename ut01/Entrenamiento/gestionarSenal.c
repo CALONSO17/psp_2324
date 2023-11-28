@@ -1,3 +1,5 @@
+//Crea un proceso que sea capaz de gestionar un señal definida por el usuario. Luego hará fork y el padre le enviará la señas al hijo. 
+//Al gestionar la señal el hijo escribirá "Recibido y terminará el proceso."
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

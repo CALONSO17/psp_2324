@@ -1,3 +1,4 @@
+// Modifica el anterior programa para que el hijo devuelva el resultado a través de un pipe. NOTA: debes crear dos pipes.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

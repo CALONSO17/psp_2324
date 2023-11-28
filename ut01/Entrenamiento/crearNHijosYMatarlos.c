@@ -1,3 +1,4 @@
+//Crea un programa que reciba un número n por parámetro. El programa creará n hijos y les enviará una señal a cada uno de ellos para matarlos.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -30,7 +31,7 @@ int main() {
         }
     }
 
-    // Esperar a que todos los hijos estén listos
+    // Esperar a que todos los hijos estén listos 2 segundos
     sleep(2);
 
     // Enviar la señal SIGKILL a todos los hijos
