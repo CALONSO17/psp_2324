@@ -11,7 +11,7 @@ void sigusr1_handler(int signo) {
 }
 
 void sigusr2_handler(int signo) {
-    printf("Mundo\n");
+    printf("Soy\n");
     // Aquí puedes realizar acciones adicionales antes de salir si lo deseas
     exit(0);
 }
